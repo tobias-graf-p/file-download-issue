@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Downloads</title>
+</head>
+<body>
+  <h1>File Downloads</h1>
+  <button onclick="downloadFile('http://192.168.178.43:3000/file1')">Download File 1</button><br />
+  <button onclick="downloadFile('http://192.168.178.43:3000/file2')">Download File 2 (with delay)</button>
+
+  <script>
+    function downloadFile(endpoint) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', endpoint, true);
+      xhr.responseType = 'blob';
+
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const url = URL.createObjectURL(xhr.response);
+          const contentDispositionHeader = xhr.getResponseHeader('Content-Disposition');
+          const fileName = getFileName(contentDispositionHeader);
+
+          console.log('xhr.response', xhr.response);
+          console.log('url', url);
+          console.log('fileName', fileName);
+
+          const downloadLinkTag = document.createElement('a');
+          downloadLinkTag.href = url;
+          downloadLinkTag.download = fileName;
+          
+          console.log('before click');
+          downloadLinkTag.click();
+          console.log('after click');
+
+          URL.revokeObjectURL(url);
+        }
+      };
+
+      xhr.send();
+    }
+
+    function getFileName(contentDispositionHeader) {
+      let fileName = contentDispositionHeader
+        .split(';')[1]
+        .split('=')[1];
+      if (fileName.startsWith('"')) {
+        fileName = fileName.substring(1, fileName.length - 1);
+      }
+      if (fileName.endsWith('"')) {
+        fileName = fileName.substring(0, fileName.length - 2);
+      }
+      return decodeURI(fileName);
+    }
+  </script>
+</body>
+</html>
