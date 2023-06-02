@@ -29,7 +29,7 @@ export class FileDownloadComponent {
         console.log('fileName', fileName);
 
         //
-        // Approach #1: Simple a-tag with object url
+        // Approach #1: a-tag with object url
         //
 
         console.log('approach #1');
@@ -50,7 +50,7 @@ export class FileDownloadComponent {
         URL.revokeObjectURL(url);
 
         //
-        // Approach #2: file-saver library
+        // Approach #2: FileSaver.js
         //
 
         // console.log('approach #2');
