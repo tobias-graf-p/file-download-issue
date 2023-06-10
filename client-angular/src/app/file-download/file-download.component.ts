@@ -35,8 +35,8 @@ export class FileDownloadComponent {
         console.log('approach #1');
         const data = response.body;
         if (!data) {
-         console.log('no data');
-         return;
+          console.log('no data');
+          return;
         }
         console.log('data', data);
         const url = URL.createObjectURL(data);
