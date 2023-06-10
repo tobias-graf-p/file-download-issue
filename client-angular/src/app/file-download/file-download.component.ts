@@ -47,7 +47,7 @@ export class FileDownloadComponent {
         console.log('before click');
         link.click();
         console.log('after click');
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 0);
 
         //
         // Approach #2: FileSaver.js
