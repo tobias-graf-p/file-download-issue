@@ -9,34 +9,32 @@
   <button onclick="downloadFile('http://192.168.178.43:3000/file2')">Download File 2 (with delay)</button>
 
   <script>
-    function downloadFile(endpoint) {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', endpoint, true);
-      xhr.responseType = 'blob';
+    async function downloadFile(endpoint) {
+      console.log('downloadFile()');
+      console.log('endpoint', endpoint);
 
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          const url = URL.createObjectURL(xhr.response);
-          const contentDispositionHeader = xhr.getResponseHeader('Content-Disposition');
-          const fileName = getFileName(contentDispositionHeader);
+      const response = await fetch(endpoint);
+      console.log('response', response);
 
-          console.log('xhr.response', xhr.response);
-          console.log('url', url);
-          console.log('fileName', fileName);
+      const blob = await response.blob();
+      console.log('blob', blob);
 
-          const downloadLinkTag = document.createElement('a');
-          downloadLinkTag.href = url;
-          downloadLinkTag.download = fileName;
-          
-          console.log('before click');
-          downloadLinkTag.click();
-          console.log('after click');
+      const url = URL.createObjectURL(blob);
+      console.log('url', url);
 
-          URL.revokeObjectURL(url);
-        }
-      };
+      const contentDispositionHeader = response.headers.get('Content-Disposition');
+      const fileName = getFileName(contentDispositionHeader);
+      console.log('fileName', fileName);
 
-      xhr.send();
+      const downloadLinkTag = document.createElement('a');
+      downloadLinkTag.href = url;
+      downloadLinkTag.download = fileName;
+
+      console.log('before click');
+      downloadLinkTag.click();
+      console.log('after click');
+
+      setTimeout(() => URL.revokeObjectURL(url), 0);
     }
 
     function getFileName(contentDispositionHeader) {
