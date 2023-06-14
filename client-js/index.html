@@ -8,6 +8,11 @@
   <button onclick="downloadFile('http://192.168.178.43:3000/file1')">Download File 1</button><br />
   <button onclick="downloadFile('http://192.168.178.43:3000/file2')">Download File 2 (with delay)</button>
 
+  <h1>File Downloads (Workaround)</h1>
+  <button onclick="prepare('http://192.168.178.43:3000/file1')">Prepare File 1</button><br />
+  <button onclick="prepare('http://192.168.178.43:3000/file2')">Prepare File 2 (with delay)</button><br />
+  <button onclick="download()">Download prepared file</button>
+
   <script>
     async function downloadFile(endpoint) {
       console.log('downloadFile()');
@@ -35,6 +40,74 @@
       console.log('after click');
 
       setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+
+    let blobUrl = '';
+    let fileName = '';
+
+    async function prepare(endpoint) {
+      console.log('perpare()');
+      console.log('endpoint', endpoint);
+
+      const response = await fetch(endpoint);
+      console.log('response', response);
+
+      const blob = await response.blob();
+      console.log('blob', blob);
+
+      blobUrl = URL.createObjectURL(blob);
+      console.log('blobUrl', blobUrl);
+
+      const contentDispositionHeader = response.headers.get('Content-Disposition');
+      fileName = getFileName(contentDispositionHeader);
+      console.log('fileName', fileName);
+
+      console.log('file from ' + endpoint + 'is ready to be downloaded via another user click');
+      alert('file from ' + endpoint + 'is ready to be downloaded via another user click');
+    }
+
+    // function download() {
+    //   console.log('download()');
+    //   console.log('blobUrl', blobUrl);
+    //   console.log('fileName', fileName);
+
+    //   fetch(blobUrl).then((response) => {
+    //     console.log('response', response);
+
+    //     response.blob().then((blob) => {
+    //       console.log('blob', blob);
+
+    //       const url = URL.createObjectURL(blob);
+    //       console.log('url', url);
+
+    //       const downloadLinkTag = document.createElement('a');
+    //       downloadLinkTag.href = url;
+    //       downloadLinkTag.download = fileName;
+
+    //       console.log('before click');
+    //       downloadLinkTag.click();
+    //       console.log('after click');
+
+    //       setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
+    //       setTimeout(() => URL.revokeObjectURL(url), 0);
+    //     })
+    //   });
+    // }
+
+    function download() {
+      console.log('download()');
+      console.log('blobUrl', blobUrl);
+      console.log('fileName', fileName);
+
+      const downloadLinkTag = document.createElement('a');
+      downloadLinkTag.href = blobUrl;
+      downloadLinkTag.download = fileName;
+
+      console.log('before click');
+      downloadLinkTag.click();
+      console.log('after click');
+
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
     }
 
     function getFileName(contentDispositionHeader) {
